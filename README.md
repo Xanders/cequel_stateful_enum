@@ -100,6 +100,30 @@ event :assign do
 end
 ```
 
+### Saving the model
+
+When firing the event model will be saved by default. To prevent saving use `save: false` attribute:
+```ruby
+@bug.assign(save: false) # => true
+```
+If model can't be saved (for example, it is in invalid state) and there was no `save: false` parameter passed, event will return `false`, but field will be changed and before callbacks will be fired. Can method does not check is the model valid:
+```ruby
+@bug.subject = '' # Invalid subject
+@bug.can_resolve? # => true
+@bug.resolve # => false
+@bug.updated_at # Not saved
+@bug.status # => :resolved
+@bug.resolved_at # Setted by after callback
+```
+
+### Danger mode
+
+If you should control the bang and non-bang behavour with variable, you can use `danger: value` parameter, where `value` is `true` or `false`. Parameter is accepted on both event and can methods:
+```ruby
+@bug.assign(danger: true) # Same as @bug.assign!
+@bug.can_assign?(danger: true) # Will raise error if can't
+```
+
 ### Event Hooks
 
 You can define `before` and `after` event hooks inside of an `event` block as shown in the example above. Symbols and Proc objects are supported.

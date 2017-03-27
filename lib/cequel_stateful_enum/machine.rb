@@ -31,20 +31,27 @@ module CequelStatefulEnum
 
         # defining event methods
         model.class_eval do
-          define_method name do |danger = false|
-            next false unless send(can, danger)
+          define_method name do |save: true, danger: false|
+            next false unless send(can, danger: danger)
             to = transitions[send(column).to_sym].first
             before.each { |callback| instance_eval(&callback) }
             send("#{column}=", to)
-            after.each { |callback| instance_eval(&callback) }
-            true
+            if save
+              if danger
+                save!
+              else
+                result = self.save
+              end
+            end
+            after.each { |callback| instance_eval(&callback) } unless result == false
+            result.nil? ? true : result
           end
 
-          define_method "#{name}!" do
-            send(name, true)
+          define_method "#{name}!" do |save: true|
+            send(name, save: save, danger: true)
           end
 
-          define_method can do |danger = false|
+          define_method can do |danger: false|
             from = send(column).to_sym
             to, condition = transitions[from]
             if !to

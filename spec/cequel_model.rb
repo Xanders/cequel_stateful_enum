@@ -2,8 +2,8 @@ class Model
   include Cequel::Record
 
   column :field, :enum, values: { zero: 0, one: 1, two: 2, three: 3 } do
-    event :one_to_two do
-      transition :one => :two
+    event :zero_to_one do
+      transition :zero => :one
     end
 
     event :one_to_two_and_two_to_three do
@@ -125,5 +125,18 @@ class Model
 
   def false?
     false
+  end
+
+  def save(*arguments)
+    @save.nil? ? true : @save
+  end
+
+  FakeSaveError = Class.new(RuntimeError)
+  def save!
+    raise FakeSaveError if @save == false
+  end
+
+  def save=(value)
+    @save = value
   end
 end
