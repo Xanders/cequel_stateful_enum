@@ -3,7 +3,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
   spec.name          = 'cequel_stateful_enum'
-  spec.version       = '1.1.0'
+  spec.version       = '1.1.1'
   spec.authors       = ['Xanders', 'Akira Matsuda']
   spec.email         = ['necropolis@inbox.ru', 'ronnie@dio.jp']
 

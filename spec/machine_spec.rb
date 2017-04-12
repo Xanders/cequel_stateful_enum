@@ -191,6 +191,14 @@ RSpec.describe CequelStatefulEnum::Machine do
       expect(subject.field).to eq(:two)
     end
 
+    it 'returns false on model in unknown state' do
+      subject.field = :unknown_state
+      expect(subject.field).to eq(nil)
+      expect(subject.can_zero_to_one?).to be_falsey
+      expect(subject.can_zero_to_one?(danger: false)).to be_falsey
+      expect(subject.field).to eq(nil)
+    end
+
     it 'returns false when conditions does not met' do
       expect(subject.can_not_if_symbol?).to be_falsey
       expect(subject.can_not_if_symbol?(danger: false)).to be_falsey
@@ -201,6 +209,13 @@ RSpec.describe CequelStatefulEnum::Machine do
       expect(subject.field).to eq(:two)
       expect { subject.can_zero_to_one?(danger: true) }.to raise_error(CequelStatefulEnum::StateError, "can't fire zero_to_one event from state two")
       expect(subject.field).to eq(:two)
+    end
+
+    it 'raises error in danger mode on model in unknown state' do
+      subject.field = :unknown_state
+      expect(subject.field).to eq(nil)
+      expect { subject.can_zero_to_one?(danger: true) }.to raise_error(CequelStatefulEnum::StateError, "can't fire zero_to_one event from unknown state nil")
+      expect(subject.field).to eq(nil)
     end
 
     it 'raises error in danger mode when conditions does not met' do

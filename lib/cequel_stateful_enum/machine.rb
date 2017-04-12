@@ -52,7 +52,12 @@ module CequelStatefulEnum
           end
 
           define_method can do |danger: false|
-            from = send(column).to_sym
+            from = send(column)
+            unless from.kind_of?(String) || from.kind_of?(Symbol)
+              raise StateError, "can't fire #{name} event from unknown state #{from.inspect}" if danger
+              return false
+            end
+            from = from.to_sym
             to, condition = transitions[from]
             if !to
               raise StateError, "can't fire #{name} event from state #{from}" if danger
